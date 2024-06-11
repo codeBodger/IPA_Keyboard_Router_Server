@@ -43,14 +43,14 @@ public void draw() {
 
 public void clientEvent(sClient C) {
   int dataIn = C.read();
-  
+  System.out.println(dataIn);
+
   // If appropriate and possible, send the 2nd byte from a python client to the right java client
   if (dataIn == 92) { // from python
     dataIn = C.read();
     String email = C.readString();
     if (emailClients.containsKey(email)) {
       emailClients.get(email).write(dataIn);
-      System.out.println(dataIn);
     }
   }
   
@@ -59,7 +59,6 @@ public void clientEvent(sClient C) {
     if (ipClients.containsKey(C.ip())) {
       emailClients.put(C.readString(), ipClients.get(C.ip()));
       ipClients.remove(C.ip());
-      System.out.println(dataIn);
     }
   }
 }
