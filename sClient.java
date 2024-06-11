@@ -47,7 +47,7 @@ public class sClient implements Runnable {
 
   protected static final int MAX_BUFFER_SIZE = 1 << 27; // 128 MB
 
-  PApplet parent;
+  IPA_Keyboard_Router_Server parent;
   Method clientEventMethod;
   Method disconnectEventMethod;
 
@@ -73,7 +73,7 @@ public class sClient implements Runnable {
    * @param host address of the server
    * @param port port to read/write from on the server
    */
-  public sClient(PApplet parent, String host, int port) {
+  public sClient(IPA_Keyboard_Router_Server parent, String host, int port) {
     this.parent = parent;
     this.host = host;
     this.port = port;
@@ -86,8 +86,8 @@ public class sClient implements Runnable {
       thread = new Thread(this);
       thread.start();
 
-      parent.registerMethod("dispose", this);
-      disposeRegistered = true;
+      // parent.registerMethod("dispose", this);
+      disposeRegistered = false;
 
       // reflection to check whether host sketch has a call for
       // public void clientEvent(processing.net.Client)
@@ -116,7 +116,7 @@ public class sClient implements Runnable {
   /**
    * @param socket any object of type Socket
    */
-  public sClient(PApplet parent, Socket socket) throws IOException {
+  public sClient(IPA_Keyboard_Router_Server parent, Socket socket) throws IOException {
     this.parent = parent;
     this.socket = socket;
 
@@ -135,13 +135,13 @@ public class sClient implements Runnable {
     } catch (Exception e) {
       // no such method, or an error... which is fine, just ignore
     }
-    // do the same for disconnectEvent(Client c);
-    try {
-      disconnectEventMethod =
-        parent.getClass().getMethod("disconnectEvent", sClient.class);
-    } catch (Exception e) {
-      // no such method, or an error... which is fine, just ignore
-    }
+    // // do the same for disconnectEvent(Client c);
+    // try {
+    //   disconnectEventMethod =
+    //     parent.getClass().getMethod("disconnectEvent", sClient.class);
+    // } catch (Exception e) {
+    //   // no such method, or an error... which is fine, just ignore
+    // }
   }
 
 
@@ -169,7 +169,7 @@ public class sClient implements Runnable {
       }
     }
     if (disposeRegistered) {
-      parent.unregisterMethod("dispose", this);
+      // parent.unregisterMethod("dispose", this);
       disposeRegistered = false;
     }
     dispose();

@@ -46,7 +46,7 @@ import java.net.*;
  * @instanceName server    any variable of type Server
  */
 public class sServer implements Runnable {
-  PApplet parent;
+  IPA_Keyboard_Router_Server parent;
   Method serverEventMethod;
 
   volatile Thread thread;
@@ -64,7 +64,7 @@ public class sServer implements Runnable {
    * @param parent typically use "this"
    * @param port port used to transfer data
    */
-  public sServer(PApplet parent, int port) {
+  public sServer(IPA_Keyboard_Router_Server parent, int port) {
     this(parent, port, null);
   }
 
@@ -74,7 +74,7 @@ public class sServer implements Runnable {
    * @param port port used to transfer data
    * @param host when multiple NICs are in use, the ip (or name) to bind from
    */
-  public sServer(PApplet parent, int port, String host) {
+  public sServer(IPA_Keyboard_Router_Server parent, int port, String host) {
     this.parent = parent;
     this.port = port;
 
@@ -90,7 +90,7 @@ public class sServer implements Runnable {
       thread = new Thread(this);
       thread.start();
 
-      parent.registerMethod("dispose", this);
+      // parent.registerMethod("dispose", this);
 
       // reflection to check whether host sketch has a call for
       // public void serverEvent(Server s, Client c);
