@@ -2,7 +2,5 @@
     "java.project.sourcePaths": [
         "."
     ],
-    "java.project.referencedLibraries": [
-        "core.jar"
-    ]
+    "java.project.referencedLibraries": []
 }
