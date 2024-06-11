@@ -27,10 +27,10 @@ int val = 0;
 
 public void setup() {
   // Starts a server on port 8000 to connect to the Clients
-  sJava = new sServer(this, 8002);
+  sJava = new sServer(this, 8000);
 
   // Starts a server on port 8001 to connect to the Python server
-  sPython = new sServer(this, 8003);
+  sPython = new sServer(this, 8001);
   
   System.out.println(sServer.ip());
   
