@@ -43,6 +43,7 @@ public void draw() {
 
 public void clientEvent(sClient C) {
   int dataIn = C.read();
+  System.out.println(dataIn);
 
   // If appropriate and possible, send the 2nd byte from a python client to the right java client
   if (dataIn == 92) { // from python
