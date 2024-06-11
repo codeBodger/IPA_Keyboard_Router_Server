@@ -50,6 +50,7 @@ public void clientEvent(sClient C) {
     String email = C.readString();
     if (emailClients.containsKey(email)) {
       emailClients.get(email).write(dataIn);
+      System.out.println(dataIn);
     }
   }
   
@@ -58,6 +59,7 @@ public void clientEvent(sClient C) {
     if (ipClients.containsKey(C.ip())) {
       emailClients.put(C.readString(), ipClients.get(C.ip()));
       ipClients.remove(C.ip());
+      System.out.println(dataIn);
     }
   }
 }
