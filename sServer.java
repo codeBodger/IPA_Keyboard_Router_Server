@@ -23,7 +23,7 @@
   Boston, MA  02111-1307  USA
 */
 
-import processing.core.*;
+// import processing.core.*;
 
 import java.io.*;
 import java.lang.reflect.*;
@@ -161,10 +161,25 @@ public class sServer implements Runnable {
   protected void addClient(sClient client) {
     synchronized (clientsLock) {
       if (clientCount == clients.length) {
-        clients = (sClient[]) PApplet.expand(clients);
+        clients = (sClient[]) expand(clients);
       }
       clients[clientCount++] = client;
     }
+  }
+   /**
+  * @nowebref
+  */
+  static public Object expand(Object list) {
+    int len = Array.getLength(list);
+    int newSize = len > 0 ? len << 1 : 1;
+  //   return expand(list, newSize);
+  // }
+  // static public Object expand(Object list, int newSize) {
+    Class<?> type = list.getClass().getComponentType();
+    Object temp = Array.newInstance(type, newSize);
+    System.arraycopy(list, 0, temp, 0,
+                     Math.min(Array.getLength(list), newSize));
+    return temp;
   }
 
 
