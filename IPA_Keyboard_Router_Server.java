@@ -49,6 +49,7 @@ public void clientEvent(sClient C) {
   if (dataIn == 92) { // from python
     dataIn = C.read();
     String email = C.readString();
+    System.out.println(email);
     if (emailClients.containsKey(email)) {
       emailClients.get(email).write(dataIn);
     }
