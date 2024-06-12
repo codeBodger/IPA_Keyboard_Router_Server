@@ -25,6 +25,7 @@ TimerTask removeUnused = new TimerTask() {
     keyClients.forEach((key, client) -> {
       if (client.timeoutNextHour) {
         keyClients.remove(key);
+        println("Kicked " + key);
         client = null;
         return;
       }
@@ -33,6 +34,7 @@ TimerTask removeUnused = new TimerTask() {
     ipClients.forEach((ip, client) -> {
       if (client.timeoutNextHour) {
         ipClients.remove(ip);
+        println("Kicked " + ip);
         client = null;
         return;
       }
