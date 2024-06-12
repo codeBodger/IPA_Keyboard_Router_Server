@@ -13,7 +13,7 @@ public class IPA_Keyboard_Router_Server {
 sServer sJava;
 sServer sPython;
 HashMap<String, sClient> ipClients = new HashMap<String, sClient>();
-HashMap<String, sClient> emailClients = new HashMap<String, sClient>();
+HashMap<String, sClient> keyClients = new HashMap<String, sClient>();
 int val = 0;
 
 public void setup() {
@@ -36,19 +36,19 @@ public void clientEvent(sClient C) {
   // If appropriate and possible, send the 2nd byte from a python client to the right java client
   if (dataIn == 92) { // from python
     dataIn = C.read();
-    String email = C.readString();
-    println(email + " sent " + dataIn);
-    if (emailClients.containsKey(email)) {
-      emailClients.get(email).write(dataIn);
+    String key = C.readString();
+    println(key + " sent " + dataIn);
+    if (keyClients.containsKey(key)) {
+      keyClients.get(key).write(dataIn);
     }
   }
   
-  // If appropriate and possible, move sClient C from ipClients to emailClients
+  // If appropriate and possible, move sClient C from ipClients to keyClients
   if (dataIn == 96) { // from java
     if (ipClients.containsKey(C.ip())) {
-      String email = C.readString();
-      println(email + " linked to " + C.ip());
-      emailClients.put(email, ipClients.get(C.ip()));
+      String key = C.readString();
+      println(key + " linked to " + C.ip());
+      keyClients.put(key, ipClients.get(C.ip()));
       ipClients.remove(C.ip());
     }
   }
