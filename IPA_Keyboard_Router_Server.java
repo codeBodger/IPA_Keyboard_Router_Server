@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class IPA_Keyboard_Router_Server {
 
@@ -14,7 +16,29 @@ sServer sJava;
 sServer sPython;
 HashMap<String, sClient> ipClients = new HashMap<String, sClient>();
 HashMap<String, sClient> keyClients = new HashMap<String, sClient>();
-int val = 0;
+// int val = 0;
+Timer timer = new Timer();
+TimerTask removeUnused = new TimerTask() {
+  @Override
+  public void run() {
+    keyClients.forEach((key, client) -> {
+      if (client.timeoutNextHour) {
+        keyClients.remove(key);
+        client = null;
+        return;
+      }
+      client.timeoutNextHour = true;
+    });
+    ipClients.forEach((ip, client) -> {
+      if (client.timeoutNextHour) {
+        ipClients.remove(ip);
+        client = null;
+        return;
+      }
+      client.timeoutNextHour = true;
+    });
+  }
+};
 
 public void setup() {
   // Starts a server on port 8000 to connect to the Clients

@@ -65,6 +65,8 @@ public class sClient implements Runnable {
 
   boolean disposeRegistered = false;
 
+  public boolean timeoutNextHour = false;
+
 
   /**
    * @param parent typically use "this"
@@ -661,6 +663,8 @@ public class sClient implements Runnable {
       e.printStackTrace();
       stop();
     }
+
+    timeoutNextHour = false;
   }
 
 
@@ -673,6 +677,8 @@ public class sClient implements Runnable {
       e.printStackTrace();
       stop();
     }
+
+    timeoutNextHour = false;
   }
 
 
