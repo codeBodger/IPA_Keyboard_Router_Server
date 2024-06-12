@@ -22,21 +22,16 @@ Timer timer = new Timer();
 TimerTask removeUnused = new TimerTask() {
   @Override
   public void run() {
-    keyClients.forEach((key, client) -> {
+    kickAndUpdate(keyClients);
+    kickAndUpdate(ipClients);
+  }
+
+  private void kickAndUpdate(HashMap<String, sClient> clients) {
+    clients.forEach((keyOrIP, client) -> {
       if (client.timeoutNextHour) {
-        keyClients.remove(key);
+        clients.remove(keyOrIP);
         client.write(-1);
-        println("Kicked " + key);
-        client = null;
-        return;
-      }
-      client.timeoutNextHour = true;
-    });
-    ipClients.forEach((ip, client) -> {
-      if (client.timeoutNextHour) {
-        ipClients.remove(ip);
-        client.write(-1);
-        println("Kicked " + ip);
+        println("Kicked " + keyOrIP);
         client = null;
         return;
       }
