@@ -58,25 +58,28 @@ public void draw() {
 
 public void clientEvent(sClient C) {
   int dataIn = C.read();
+  String key;
 
-  // If appropriate and possible, send the 2nd byte from a python client to the right java client
-  if (dataIn == 92) { // from python
-    dataIn = C.read();
-    String key = C.readString();
-    println(key + " sent " + dataIn);
-    if (keyClients.containsKey(key)) {
-      keyClients.get(key).write(dataIn);
-    }
-  }
-  
-  // If appropriate and possible, move sClient C from ipClients to keyClients
-  if (dataIn == 96) { // from java
-    if (ipClients.containsKey(C.ip())) {
-      String key = C.readString();
-      println(key + " linked to " + C.ip());
-      keyClients.put(key, ipClients.get(C.ip()));
-      ipClients.remove(C.ip());
-    }
+  switch (dataIn) {
+    // If appropriate and possible, send the 2nd byte from a python client to the right java client
+    case 92: // from python
+      dataIn = C.read();
+      key = C.readString();
+      println(key + " sent " + dataIn);
+      if (keyClients.containsKey(key)) {
+        keyClients.get(key).write(dataIn);
+      }
+    break;
+    
+    // If appropriate and possible, move sClient C from ipClients to keyClients
+    case 96: // java connect
+      if (ipClients.containsKey(C.ip())) {
+        key = C.readString();
+        println(key + " linked to " + C.ip());
+        keyClients.put(key, ipClients.get(C.ip()));
+        ipClients.remove(C.ip());
+      }
+    break;
   }
 }
 
