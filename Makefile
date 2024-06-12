@@ -10,7 +10,7 @@ sServer.class: sServer.java
 	javac sServer.java
 
 run: pull all
-	-kill `ps -e -o pid,args | grep "java IPA_Keyboard_Router_Server" | grep -v grep | grep -o "^\S\+"`
+	-kill `ps -e -o pid,args | grep -v grep | grep "java IPA_Keyboard_Router_Server" | grep -o "^\S\+"`
 	java IPA_Keyboard_Router_Server >> /home/phonetics/java-log &
 
 pull:
