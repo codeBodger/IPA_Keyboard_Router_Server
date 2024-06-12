@@ -23,8 +23,6 @@
   Boston, MA  02111-1307  USA
 */
 
-// import processing.core.*;
-
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -84,13 +82,11 @@ public class sServer implements Runnable {
       } else {
         server = new ServerSocket(this.port, 10, InetAddress.getByName(host));
       }
-      //clients = new Vector();
       clients = new sClient[10];
 
       thread = new Thread(this);
       thread.start();
 
-      // parent.registerMethod("dispose", this);
 
       // reflection to check whether host sketch has a call for
       // public void serverEvent(Server s, Client c);
@@ -103,10 +99,8 @@ public class sServer implements Runnable {
       }
 
     } catch (IOException e) {
-      //e.printStackTrace();
       thread = null;
       throw new RuntimeException(e);
-      //errorMessage("<init>", e);
     }
   }
 
@@ -172,9 +166,6 @@ public class sServer implements Runnable {
   static public Object expand(Object list) {
     int len = Array.getLength(list);
     int newSize = len > 0 ? len << 1 : 1;
-  //   return expand(list, newSize);
-  // }
-  // static public Object expand(Object list, int newSize) {
     Class<?> type = list.getClass().getComponentType();
     Object temp = Array.newInstance(type, newSize);
     System.arraycopy(list, 0, temp, 0,
@@ -340,7 +331,6 @@ public class sServer implements Runnable {
         System.err.println("Server SocketException: " + e.getMessage());
         thread = null;
       } catch (IOException e) {
-        //errorMessage("run", e);
         e.printStackTrace();
         thread = null;
       }

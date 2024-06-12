@@ -23,8 +23,6 @@
   Boston, MA  02111-1307  USA
 */
 
-// import processing.core.*;
-
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -135,13 +133,6 @@ public class sClient implements Runnable {
     } catch (Exception e) {
       // no such method, or an error... which is fine, just ignore
     }
-    // // do the same for disconnectEvent(Client c);
-    // try {
-    //   disconnectEventMethod =
-    //     parent.getClass().getMethod("disconnectEvent", sClient.class);
-    // } catch (Exception e) {
-    //   // no such method, or an error... which is fine, just ignore
-    // }
   }
 
 
@@ -294,7 +285,6 @@ public class sClient implements Runnable {
           }
         }
       } catch (IOException e) {
-        //errorMessage("run", e);
         e.printStackTrace();
       }
     }
