@@ -4,6 +4,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,7 +28,9 @@ TimerTask removeUnused = new TimerTask() {
   }
 
   private void kickAndUpdate(HashMap<String, sClient> clients) {
-    clients.forEach((keyOrIP, client) -> {
+    for (Map.Entry<String, sClient> clientMap : clients.entrySet()) {
+      sClient client = clientMap.getValue();
+      String keyOrIP = clientMap.getKey();
       if (client.timeoutNextHour) {
         clients.remove(keyOrIP);
         client.write(-1);
@@ -36,7 +39,7 @@ TimerTask removeUnused = new TimerTask() {
         return;
       }
       client.timeoutNextHour = true;
-    });
+    }
   }
 };
 
