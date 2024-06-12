@@ -12,7 +12,7 @@ sServer.class: sServer.java
 run: pull all
 	-kill `ps -e -o pid,args | grep -v grep | grep "java IPA_Keyboard_Router_Server" | grep -o "^\S\+"`
 	sleep 2
-	java IPA_Keyboard_Router_Server >> /home/phonetics/java-log &
+	java IPA_Keyboard_Router_Server &>> /home/phonetics/java-log &
 
 pull:
 	git pull
