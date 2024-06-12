@@ -87,7 +87,7 @@ public void serverEvent(sServer S, sClient C) {
     final Date currentTime = new Date();
 
     final SimpleDateFormat sdf =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss\t");
 
     // Give it to me in GMT time.
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
