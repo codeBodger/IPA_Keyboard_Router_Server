@@ -10,7 +10,8 @@ import java.util.TimerTask;
 
 public class IPA_Keyboard_Router_Server {
 
-
+public static final long DELAY_HOURS = 1;
+public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
 
 sServer sJava;
 sServer sPython;
@@ -48,6 +49,8 @@ public void setup() {
   sPython = new sServer(this, 8001);
   
   println("Server started on " + sServer.ip());
+
+  timer.schedule(removeUnused, DELAY_MILLIS, DELAY_MILLIS);
 }
 
 public void draw() {
