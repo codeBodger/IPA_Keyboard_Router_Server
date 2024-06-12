@@ -11,9 +11,9 @@ import java.util.TimerTask;
 
 public class IPA_Keyboard_Router_Server {
 
-// public static final long DELAY_HOURS = 1;
-// public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
-public static final long DELAY_MILLIS = 1000 * 60 * 2;
+public static final long DELAY_HOURS = 1;
+public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
+// public static final long DELAY_MILLIS = 1000 * 60 * 2;
 
 sServer sJava;
 sServer sPython;
