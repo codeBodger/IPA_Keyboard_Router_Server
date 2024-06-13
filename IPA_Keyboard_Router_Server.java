@@ -78,13 +78,14 @@ public void clientEvent(sClient C) {
     // If appropriate and possible, move sClient C from ipClients to keyClients
     case 96: // java connect
       // if (ipClients.containsKey(C.ip())) {
-      if (C.getPort() != 8000) return;
+      println("" + C.getPort());
+      if (C.getPort() == 8000) {
         key = C.readString();
         println(key + " linked to " + C.ip());
         // keyClients.put(key, ipClients.get(C.ip()));
         keyClients.put(key, C);
         // ipClients.remove(C.ip());
-      // }
+      }
     break;
   }
 }
