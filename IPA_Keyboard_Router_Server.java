@@ -17,7 +17,7 @@ public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
 
 sServer sJava;
 sServer sPython;
-HashMap<String, sClient> ipClients = new HashMap<String, sClient>();
+// HashMap<String, sClient> ipClients = new HashMap<String, sClient>();
 HashMap<String, sClient> keyClients = new HashMap<String, sClient>();
 // int val = 0;
 Timer timer = new Timer();
@@ -25,7 +25,7 @@ TimerTask removeUnused = new TimerTask() {
   @Override
   public void run() {
     kickAndUpdate(keyClients);
-    kickAndUpdate(ipClients);
+    // kickAndUpdate(ipClients);
   }
 
   private void kickAndUpdate(HashMap<String, sClient> clients) {
@@ -77,22 +77,24 @@ public void clientEvent(sClient C) {
     
     // If appropriate and possible, move sClient C from ipClients to keyClients
     case 96: // java connect
-      if (ipClients.containsKey(C.ip())) {
+      // if (ipClients.containsKey(C.ip())) {
+      if (C.getPort() != 8000) return;
         key = C.readString();
         println(key + " linked to " + C.ip());
-        keyClients.put(key, ipClients.get(C.ip()));
-        ipClients.remove(C.ip());
-      }
+        // keyClients.put(key, ipClients.get(C.ip()));
+        keyClients.put(key, C);
+        // ipClients.remove(C.ip());
+      // }
     break;
   }
 }
 
 // New Client C just connected to Server S
-public void serverEvent(sServer S, sClient C) {
-  if (S.getPort() != 8000) return;
-  ipClients.put(C.ip(), C);
-  println(C.ip() + " connected");
-}
+// public void serverEvent(sServer S, sClient C) {
+//   if (S.getPort() != 8000) return;
+//   ipClients.put(C.ip(), C);
+//   println(C.ip() + " connected");
+// }
 
   static public void main(String[] passedArgs) {
     runSketch();
