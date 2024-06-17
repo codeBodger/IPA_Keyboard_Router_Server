@@ -9,8 +9,10 @@ sClient.class: sClient.java
 sServer.class: sServer.java
 	javac sServer.java
 
-run: pull all
+run: all
 	kill `ps -e -o pid,args | grep -v grep | grep "/usr/bin/java -cp /home/phonetics/IPA_Keyboard_Router_Server IPA_Keyboard_Router_Server" | grep -o "^\ \+\S\+"`
 
 pull:
 	git pull
+
+prun: pull run
