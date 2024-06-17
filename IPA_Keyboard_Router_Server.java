@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Function;
 
 public class IPA_Keyboard_Router_Server {
 
@@ -44,14 +43,11 @@ TimerTask removeUnused = new TimerTask() {
 };
 
 public void setup() {
-  Function<sClient, Integer> jClientEvent = C -> javaClientEvent(C);
-  Function<sClient, Integer> pClientEvent = C -> pythonClientEvent(C);
-
   // Starts a server on port 8000 to connect to the Clients
-  sJava = new sServer(8000, jClientEvent);
+  sJava = new sServer(8000, C -> javaClientEvent(C));
 
   // Starts a server on port 8001 to connect to the Python server
-  sPython = new sServer(8001, pClientEvent);
+  sPython = new sServer(8001, C -> pythonClientEvent(C));
   
   println("Server started on " + sServer.ip());
 
