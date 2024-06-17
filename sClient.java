@@ -47,7 +47,6 @@ public class sClient implements Runnable {
 
   IPA_Keyboard_Router_Server parent;
   Method clientEventMethod;
-  Method disconnectEventMethod;
 
   volatile Thread thread;
   Socket socket;
@@ -98,13 +97,6 @@ public class sClient implements Runnable {
       } catch (Exception e) {
         // no such method, or an error... which is fine, just ignore
       }
-      // do the same for disconnectEvent(Client c);
-      try {
-        disconnectEventMethod =
-          parent.getClass().getMethod("disconnectEvent", sClient.class);
-      } catch (Exception e) {
-        // no such method, or an error... which is fine, just ignore
-      }
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -150,21 +142,7 @@ public class sClient implements Runnable {
    * @usage application
    */
   public void stop() {
-    if (disconnectEventMethod != null && thread != null){
-      try {
-        disconnectEventMethod.invoke(parent, this);
-      } catch (Exception e) {
-        Throwable cause = e;
-        // unwrap the exception if it came from the user code
-        if (e instanceof InvocationTargetException && e.getCause() != null) {
-          cause = e.getCause();
-        }
-        cause.printStackTrace();
-        disconnectEventMethod = null;
-      }
-    }
     if (disposeRegistered) {
-      // parent.unregisterMethod("dispose", this);
       disposeRegistered = false;
     }
     dispose();

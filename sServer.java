@@ -45,7 +45,6 @@ import java.net.*;
  */
 public class sServer implements Runnable {
   IPA_Keyboard_Router_Server parent;
-  Method serverEventMethod;
 
   volatile Thread thread;
   ServerSocket server;
@@ -86,18 +85,6 @@ public class sServer implements Runnable {
 
       thread = new Thread(this);
       thread.start();
-
-
-      // reflection to check whether host sketch has a call for
-      // public void serverEvent(Server s, Client c);
-      // which is called when a new guy connects
-      try {
-        serverEventMethod =
-          parent.getClass().getMethod("serverEvent", sServer.class, sClient.class);
-      } catch (Exception e) {
-        // no such method, or an error.. which is fine, just ignore
-      }
-
     } catch (IOException e) {
       thread = null;
       throw new RuntimeException(e);
@@ -311,20 +298,6 @@ public class sServer implements Runnable {
         sClient client = new sClient(parent, socket);
         synchronized (clientsLock) {
           addClient(client);
-          if (serverEventMethod != null) {
-            try {
-              serverEventMethod.invoke(parent, this, client);
-            } catch (Exception e) {
-              System.err.println("Disabling serverEvent() for port " + port);
-              Throwable cause = e;
-              // unwrap the exception if it came from the user code
-              if (e instanceof InvocationTargetException && e.getCause() != null) {
-                cause = e.getCause();
-              }
-              cause.printStackTrace();
-              serverEventMethod = null;
-            }
-          }
         }
       } catch (SocketException e) {
         //thrown when server.close() is called and server is waiting on accept
