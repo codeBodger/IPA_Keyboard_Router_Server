@@ -17,25 +17,23 @@ public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
 
 sServer sJava;
 sServer sPython;
-// HashMap<String, sClient> ipClients = new HashMap<String, sClient>();
-HashMap<String, sClient> keyClients = new HashMap<String, sClient>();
-// int val = 0;
+HashMap<String, sClient> clients = new HashMap<String, sClient>();
+
 Timer timer = new Timer();
 TimerTask removeUnused = new TimerTask() {
   @Override
   public void run() {
-    kickAndUpdate(keyClients);
-    // kickAndUpdate(ipClients);
+    kickAndUpdate(clients);
   }
 
   private void kickAndUpdate(HashMap<String, sClient> clients) {
     for (Map.Entry<String, sClient> clientMap : clients.entrySet()) {
       sClient client = clientMap.getValue();
-      String keyOrIP = clientMap.getKey();
+      String key = clientMap.getKey();
       if (client.timeoutNextHour) {
-        clients.remove(keyOrIP);
+        clients.remove(key);
         client.write(-1);
-        println("Kicked " + keyOrIP);
+        println("Kicked " + key);
         client = null;
         return;
       }
@@ -70,32 +68,21 @@ public void clientEvent(sClient C) {
       dataIn = C.read();
       key = C.readString();
       println(key + " sent " + dataIn);
-      if (keyClients.containsKey(key)) {
-        keyClients.get(key).write(dataIn);
+      if (clients.containsKey(key)) {
+        clients.get(key).write(dataIn);
       }
     break;
     
-    // If appropriate and possible, move sClient C from ipClients to keyClients
+    // If appropriate and possible, add sClient C to keyClients
     case 96: // java connect
-      // if (ipClients.containsKey(C.ip())) {
-      println("" + C.getPort());
       if (C.getPort() == 8000) {
         key = C.readString();
         println(key + " linked to " + C.ip());
-        // keyClients.put(key, ipClients.get(C.ip()));
-        keyClients.put(key, C);
-        // ipClients.remove(C.ip());
+        clients.put(key, C);
       }
     break;
   }
 }
-
-// New Client C just connected to Server S
-// public void serverEvent(sServer S, sClient C) {
-//   if (S.getPort() != 8000) return;
-//   ipClients.put(C.ip(), C);
-//   println(C.ip() + " connected");
-// }
 
   static public void main(String[] passedArgs) {
     runSketch();
