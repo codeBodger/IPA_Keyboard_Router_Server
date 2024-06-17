@@ -120,6 +120,8 @@ public class sClient implements Runnable {
     this.parent = parent;
     this.socket = socket;
 
+    this.port = socket.getPort();
+
     input = socket.getInputStream();
     output = socket.getOutputStream();
 
