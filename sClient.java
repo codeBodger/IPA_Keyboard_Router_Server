@@ -27,6 +27,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 /**
    *
@@ -46,7 +47,7 @@ public class sClient implements Runnable {
   protected static final int MAX_BUFFER_SIZE = 1 << 27; // 128 MB
 
   IPA_Keyboard_Router_Server parent;
-  Method clientEventMethod;
+  Function<sClient, Integer> clientEventFunction;
 
   volatile Thread thread;
   Socket socket;
@@ -72,10 +73,10 @@ public class sClient implements Runnable {
    * @param host address of the server
    * @param port port to read/write from on the server
    */
-  public sClient(IPA_Keyboard_Router_Server parent, String host, int port) {
-    this.parent = parent;
+  public sClient(String host, int port, Function<sClient, Integer> clientEvent) {
     this.host = host;
     this.port = port;
+    clientEventFunction = clientEvent;
 
     try {
       socket = new Socket(this.host, this.port);
@@ -88,16 +89,6 @@ public class sClient implements Runnable {
       // parent.registerMethod("dispose", this);
       disposeRegistered = false;
 
-      // reflection to check whether host sketch has a call for
-      // public void clientEvent(processing.net.Client)
-      // which would be called each time an event comes in
-      try {
-        clientEventMethod =
-          parent.getClass().getMethod("clientEvent", sClient.class);
-      } catch (Exception e) {
-        // no such method, or an error... which is fine, just ignore
-      }
-
     } catch (IOException e) {
       e.printStackTrace();
       dispose();
@@ -108,9 +99,9 @@ public class sClient implements Runnable {
   /**
    * @param socket any object of type Socket
    */
-  public sClient(IPA_Keyboard_Router_Server parent, Socket socket) throws IOException {
-    this.parent = parent;
+  public sClient(Socket socket, Function<sClient, Integer> clientEvent) throws IOException {
     this.socket = socket;
+    clientEventFunction = clientEvent;
 
     this.port = socket.getLocalPort();
 
@@ -119,16 +110,6 @@ public class sClient implements Runnable {
 
     thread = new Thread(this);
     thread.start();
-
-    // reflection to check whether host sketch has a call for
-    // public void clientEvent(processing.net.Client)
-    // which would be called each time an event comes in
-    try {
-      clientEventMethod =
-          parent.getClass().getMethod("clientEvent", sClient.class);
-    } catch (Exception e) {
-      // no such method, or an error... which is fine, just ignore
-    }
   }
 
 
@@ -251,25 +232,30 @@ public class sClient implements Runnable {
           }
 
           // now post an event
-          if (clientEventMethod != null) {
-            try {
-              clientEventMethod.invoke(parent, this);
-            } catch (Exception e) {
-              System.err.println("error, disabling clientEvent() for " + host);
-              Throwable cause = e;
-              // unwrap the exception if it came from the user code
-              if (e instanceof InvocationTargetException && e.getCause() != null) {
-                cause = e.getCause();
-              }
-              cause.printStackTrace();
-              clientEventMethod = null;
-            }
-          }
+          event();
+          // if (clientEventMethod != null) {
+          //   try {
+          //     clientEventMethod.invoke(parent, this);
+          //   } catch (Exception e) {
+          //     System.err.println("error, disabling clientEvent() for " + host);
+          //     Throwable cause = e;
+          //     // unwrap the exception if it came from the user code
+          //     if (e instanceof InvocationTargetException && e.getCause() != null) {
+          //       cause = e.getCause();
+          //     }
+          //     cause.printStackTrace();
+          //     clientEventMethod = null;
+          //   }
+          // }
         }
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
+  }
+
+  void event() {
+    clientEventFunction.apply(this);
   }
 
 

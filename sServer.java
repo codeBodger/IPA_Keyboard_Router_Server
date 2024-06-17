@@ -26,6 +26,7 @@
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
+import java.util.function.Function;
 
 
 /**
@@ -44,7 +45,7 @@ import java.net.*;
  * @instanceName server    any variable of type Server
  */
 public class sServer implements Runnable {
-  IPA_Keyboard_Router_Server parent;
+  Function<sClient, Integer> clientEvent;
 
   volatile Thread thread;
   ServerSocket server;
@@ -61,8 +62,8 @@ public class sServer implements Runnable {
    * @param parent typically use "this"
    * @param port port used to transfer data
    */
-  public sServer(IPA_Keyboard_Router_Server parent, int port) {
-    this(parent, port, null);
+  public sServer(int port, Function<sClient, Integer> clientEvent) {
+    this(port, null, clientEvent);
   }
 
 
@@ -71,9 +72,9 @@ public class sServer implements Runnable {
    * @param port port used to transfer data
    * @param host when multiple NICs are in use, the ip (or name) to bind from
    */
-  public sServer(IPA_Keyboard_Router_Server parent, int port, String host) {
-    this.parent = parent;
+  public sServer(int port, String host, Function<sClient, Integer> clientEvent) {
     this.port = port;
+    this.clientEvent = clientEvent;
 
     try {
       if (host == null) {
@@ -295,7 +296,7 @@ public class sServer implements Runnable {
     while (Thread.currentThread() == thread) {
       try {
         Socket socket = server.accept();
-        sClient client = new sClient(parent, socket);
+        sClient client = new sClient(socket, clientEvent);
         synchronized (clientsLock) {
           addClient(client);
         }

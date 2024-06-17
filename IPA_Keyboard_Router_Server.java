@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 public class IPA_Keyboard_Router_Server {
 
@@ -43,11 +44,14 @@ TimerTask removeUnused = new TimerTask() {
 };
 
 public void setup() {
+  Function<sClient, Integer> jClientEvent = C -> javaClientEvent(C);
+  Function<sClient, Integer> pClientEvent = C -> pythonClientEvent(C);
+
   // Starts a server on port 8000 to connect to the Clients
-  sJava = new sServer(this, 8000);
+  sJava = new sServer(8000, jClientEvent);
 
   // Starts a server on port 8001 to connect to the Python server
-  sPython = new sServer(this, 8001);
+  sPython = new sServer(8001, pClientEvent);
   
   println("Server started on " + sServer.ip());
 
@@ -58,7 +62,47 @@ public void draw() {
   throw new Error();
 }
 
-public void clientEvent(sClient C) {
+// public void clientEvent(sClient C) {
+//   int dataIn = C.read();
+//   String key;
+
+//   switch (dataIn) {
+//     // If appropriate and possible, send the 2nd byte from a python client to the right java client
+//     case 92: // from python
+//       dataIn = C.read();
+//       key = C.readString();
+//       println(key + " sent " + dataIn);
+//       if (clients.containsKey(key)) {
+//         clients.get(key).write(dataIn);
+//       }
+//     break;
+    
+//     // If appropriate and possible, add sClient C to keyClients
+//     case 96: // java connect
+//       if (C.getPort() == 8000) {
+//         key = C.readString();
+//         println(key + " linked to " + C.ip());
+//         clients.put(key, C);
+//       }
+//     break;
+//   }
+// }
+public int javaClientEvent(sClient C) {
+  int dataIn = C.read();
+  String key;
+
+  switch (dataIn) {
+    // If appropriate and possible, add sClient C to keyClients
+    case 96: // java connect
+        key = C.readString();
+        println(key + " linked to " + C.ip());
+        clients.put(key, C);
+    break;
+  }
+
+  return C.getPort();
+}
+public int pythonClientEvent(sClient C) {
   int dataIn = C.read();
   String key;
 
@@ -72,16 +116,9 @@ public void clientEvent(sClient C) {
         clients.get(key).write(dataIn);
       }
     break;
-    
-    // If appropriate and possible, add sClient C to keyClients
-    case 96: // java connect
-      if (C.getPort() == 8000) {
-        key = C.readString();
-        println(key + " linked to " + C.ip());
-        clients.put(key, C);
-      }
-    break;
   }
+
+  return C.getPort();
 }
 
   static public void main(String[] passedArgs) {
