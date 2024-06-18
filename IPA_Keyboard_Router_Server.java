@@ -73,6 +73,7 @@ public int javaClientEvent(sClient C) {
 
   return C.getPort();
 }
+
 public int pythonClientEvent(sClient C) {
   int dataIn = C.read();
   String key;
@@ -85,7 +86,9 @@ public int pythonClientEvent(sClient C) {
       println(key + " sent " + dataIn);
       if (clients.containsKey(key)) {
         clients.get(key).write(dataIn);
+        C.write(1); //success
       }
+      else C.write(0); //failure
     break;
   }
 
