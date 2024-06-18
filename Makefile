@@ -15,4 +15,8 @@ run: all
 pull:
 	git pull
 
+checkout:
+	git checkout *.java Makefile
+
 prun: pull run
+crun: checkout run
