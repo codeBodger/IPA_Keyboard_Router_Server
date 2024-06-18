@@ -58,31 +58,6 @@ public void draw() {
   throw new Error();
 }
 
-// public void clientEvent(sClient C) {
-//   int dataIn = C.read();
-//   String key;
-
-//   switch (dataIn) {
-//     // If appropriate and possible, send the 2nd byte from a python client to the right java client
-//     case 92: // from python
-//       dataIn = C.read();
-//       key = C.readString();
-//       println(key + " sent " + dataIn);
-//       if (clients.containsKey(key)) {
-//         clients.get(key).write(dataIn);
-//       }
-//     break;
-    
-//     // If appropriate and possible, add sClient C to keyClients
-//     case 96: // java connect
-//       if (C.getPort() == 8000) {
-//         key = C.readString();
-//         println(key + " linked to " + C.ip());
-//         clients.put(key, C);
-//       }
-//     break;
-//   }
-// }
 public int javaClientEvent(sClient C) {
   int dataIn = C.read();
   String key;

@@ -86,9 +86,7 @@ public class sClient implements Runnable {
       thread = new Thread(this);
       thread.start();
 
-      // parent.registerMethod("dispose", this);
       disposeRegistered = false;
-
     } catch (IOException e) {
       e.printStackTrace();
       dispose();
@@ -233,20 +231,6 @@ public class sClient implements Runnable {
 
           // now post an event
           event();
-          // if (clientEventMethod != null) {
-          //   try {
-          //     clientEventMethod.invoke(parent, this);
-          //   } catch (Exception e) {
-          //     System.err.println("error, disabling clientEvent() for " + host);
-          //     Throwable cause = e;
-          //     // unwrap the exception if it came from the user code
-          //     if (e instanceof InvocationTargetException && e.getCause() != null) {
-          //       cause = e.getCause();
-          //     }
-          //     cause.printStackTrace();
-          //     clientEventMethod = null;
-          //   }
-          // }
         }
       } catch (IOException e) {
         e.printStackTrace();
