@@ -211,7 +211,7 @@ public class sClient implements Runnable {
   }
 
   void event() {
-    clientEventFunction.apply(this);
+    this.write(clientEventFunction.apply(this));
   }
 
 

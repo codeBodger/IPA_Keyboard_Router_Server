@@ -65,13 +65,13 @@ public int javaClientEvent(sClient C) {
   switch (dataIn) {
     // If appropriate and possible, add sClient C to keyClients
     case 96: // java connect
-        key = C.readString();
-        println(key + " linked to " + C.ip());
-        clients.put(key, C);
-    break;
+      key = C.readString();
+      println(key + " linked to " + C.ip());
+      clients.put(key, C);
+      return 254; //success
   }
 
-  return C.getPort();
+  return 255; //unknown error
 }
 
 public int pythonClientEvent(sClient C) {
@@ -84,21 +84,16 @@ public int pythonClientEvent(sClient C) {
       dataIn = C.read();
       key = C.readString();
       println(key + " sent " + dataIn);
-      try {
-        if (clients.containsKey(key)) {
-          clients.get(key).write(dataIn);
-          C.write(0); //success
-        }
-        else C.write(1); //nokey
-      }
+      if (!clients.containsKey(key)) return 1; //nokey
+      try { clients.get(key).write(dataIn); }
       catch (NullPointerException e) {
-        C.write(2); //noclient
         clients.remove(key);
+        return 2; //noclient
       }
-    break;
+      return 0; //success
   }
 
-  return C.getPort();
+  return 255; //unknown error
 }
 
   static public void main(String[] passedArgs) {
