@@ -32,7 +32,7 @@ TimerTask removeUnused = new TimerTask() {
       String key = clientMap.getKey();
       if (client.timeoutNextHour) {
         clients.remove(key);
-        client.write(-1);
+        client.write(253); //timedout
         println("Kicked " + key);
         client = null;
         return;
