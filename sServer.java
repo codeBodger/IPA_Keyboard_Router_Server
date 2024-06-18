@@ -63,8 +63,8 @@ public class sServer implements Runnable {
 
 
   /**
-   * @param parent typically use "this"
    * @param port port used to transfer data
+   * @param clientEvent a lambda from `sClient` to `Integer` that's called whenever data is sent to sClient objects of this sServer
    */
   public sServer(int port, Function<sClient, Integer> clientEvent) {
     this(port, null, clientEvent);
@@ -72,9 +72,9 @@ public class sServer implements Runnable {
 
 
   /**
-   * @param parent typically use "this"
    * @param port port used to transfer data
    * @param host when multiple NICs are in use, the ip (or name) to bind from
+   * @param clientEvent a lambda from `sClient` to `Integer` that's called whenever data is sent to sClient objects of this sServer
    */
   public sServer(int port, String host, Function<sClient, Integer> clientEvent) {
     this.port = port;

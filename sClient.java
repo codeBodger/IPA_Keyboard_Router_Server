@@ -61,43 +61,16 @@ public class sClient implements Runnable {
 
   final Object bufferLock = new Object[0];
 
-  byte[] buffer = new byte[32768];
+  byte[] buffer = new byte[32768]; //2**15; 65536/2
   int bufferIndex;
   int bufferLast;
-
-  boolean disposeRegistered = false;
 
   public boolean timeoutNextHour = false;
 
 
   /**
-   * @param parent typically use "this"
-   * @param host address of the server
-   * @param port port to read/write from on the server
-   */
-  public sClient(String host, int port, Function<sClient, Integer> clientEvent) {
-    this.host = host;
-    this.port = port;
-    clientEventFunction = clientEvent;
-
-    try {
-      socket = new Socket(this.host, this.port);
-      input = socket.getInputStream();
-      output = socket.getOutputStream();
-
-      thread = new Thread(this);
-      thread.start();
-
-      disposeRegistered = false;
-    } catch (IOException e) {
-      e.printStackTrace();
-      dispose();
-    }
-  }
-
-
-  /**
    * @param socket any object of type Socket
+   * @param clientEvent a function from `sClient` to `Integer` that's called whenever data is sent to this sClient object
    */
   public sClient(Socket socket, Function<sClient, Integer> clientEvent) throws IOException {
     this.socket = socket;
@@ -123,9 +96,6 @@ public class sClient implements Runnable {
    * @usage application
    */
   public void stop() {
-    if (disposeRegistered) {
-      disposeRegistered = false;
-    }
     dispose();
   }
 
@@ -278,7 +248,6 @@ public class sClient implements Runnable {
   /**
    *
    * Returns the port by which the Client is attached to ther server.
-   * Note: does not seem to quite have expected behaviour, but I don't think that it matters for my use.
    *
    * @webref client
    * @usage application
