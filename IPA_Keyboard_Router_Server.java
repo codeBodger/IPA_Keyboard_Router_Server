@@ -93,6 +93,7 @@ public int pythonClientEvent(sClient C) {
       }
       catch (NullPointerException e) {
         C.write(2); //noclient
+        clients.remove(key);
       }
     break;
   }
