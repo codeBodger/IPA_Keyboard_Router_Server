@@ -69,7 +69,7 @@ public int javaClientEvent(sClient C) {
     // If appropriate and possible, add sClient C to keyClients
     case 96: // java connect
       key = C.readString();
-      println(key + " linked to " + C.ip());
+      println(key + " for linking to " + C.ip());
       clients.put(key, C);
       return 254; //success
   }
@@ -95,6 +95,7 @@ public int pythonClientEvent(sClient C) {
       }
       key = rand64Str(18);
       clients.put(key, clients.remove(linkingKey));
+      println(key + " linked to " + clients.get(key).ip());
       C.write(key);
       return 0; //success
 
