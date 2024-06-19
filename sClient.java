@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.function.Function;
 
 /**
@@ -66,6 +67,7 @@ public class sClient implements Runnable {
   int bufferLast;
 
   public boolean timeoutNextHour = false;
+  long timeConnected;
 
 
   /**
@@ -75,6 +77,8 @@ public class sClient implements Runnable {
   public sClient(Socket socket, Function<sClient, Integer> clientEvent) throws IOException {
     this.socket = socket;
     clientEventFunction = clientEvent;
+
+    timeConnected = new Date().getTime();
 
     this.port = socket.getLocalPort();
 
@@ -212,6 +216,11 @@ public class sClient implements Runnable {
 
   void event() {
     this.write(clientEventFunction.apply(this));
+  }
+
+
+  public boolean activationTimedout() {
+    return new Date().getTime() - timeConnected > 5 * 60 * 1000; // 5 minutes
   }
 
 
@@ -574,6 +583,7 @@ public class sClient implements Runnable {
    * @usage application
    * @webBrief  Writes <b>bytes</b>, <b>chars</b>, <b>ints</b>, <b>bytes[]</b>, <b>Strings</b>
    * @param data data to write
+   * @return `true` on successful write
    */
   public boolean write(int data) {  // will also cover char
     try {

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,6 +19,8 @@ public static final long DELAY_MILLIS = 1000 * 60 * 60 * DELAY_HOURS;
 sServer sJava;
 sServer sPython;
 HashMap<String, sClient> clients = new HashMap<String, sClient>();
+
+Random rand = new Random();
 
 Timer timer = new Timer();
 TimerTask removeUnused = new TimerTask() {
@@ -79,8 +82,24 @@ public int pythonClientEvent(sClient C) {
   String key;
 
   switch (dataIn) {
+    case 0: // linking
+      String linkingKey = C.readString();
+      if (!clients.containsKey(linkingKey)) return 1; //nokey
+      if (clients.get(linkingKey).activationTimedout()) {
+        clients.remove(linkingKey);
+        return 3; //expired
+      }
+      if (!clients.get(linkingKey).write(252)) {
+        clients.remove(linkingKey);
+        return 2; //noclient
+      }
+      key = rand64Str(18);
+      clients.put(key, clients.remove(linkingKey));
+      C.write(key);
+      return 0; //success
+
     // If appropriate and possible, send the 2nd byte from a python client to the right java client
-    case 92: // from python
+    case 1: // sending a key
       dataIn = C.read();
       key = C.readString();
       println(key + " sent " + dataIn);
@@ -123,5 +142,14 @@ public int pythonClientEvent(sClient C) {
     // Give it to me in GMT time.
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     System.out.println(sdf.format(currentTime) + str);
+  }
+
+  String rand64Str(int length) {
+    final char[] ALPHABET = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '!', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', '/', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', '-', '_'};
+    String out = "";
+    for (int i = 0; i < length; i++) {
+      out += ALPHABET[rand.nextInt(64)];
+    }
+    return out;
   }
 }
