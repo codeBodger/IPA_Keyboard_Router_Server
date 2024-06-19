@@ -575,17 +575,19 @@ public class sClient implements Runnable {
    * @webBrief  Writes <b>bytes</b>, <b>chars</b>, <b>ints</b>, <b>bytes[]</b>, <b>Strings</b>
    * @param data data to write
    */
-  public void write(int data) {  // will also cover char
+  public boolean write(int data) {  // will also cover char
     try {
+      if (output == null) return false;
       output.write(data & 0xff);  // for good measure do the &
       output.flush();   // hmm, not sure if a good idea
-
-    } catch (Exception e) {  // null pointer or serial port dead
+    } catch (IOException e) {  // ~~null pointer~~ or serial port dead ??
       e.printStackTrace();
       stop();
+      return false;
     }
 
     timeoutNextHour = false;
+    return true;
   }
 
 

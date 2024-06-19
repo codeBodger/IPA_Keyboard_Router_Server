@@ -85,12 +85,8 @@ public int pythonClientEvent(sClient C) {
       key = C.readString();
       println(key + " sent " + dataIn);
       if (!clients.containsKey(key)) return 1; //nokey
-      try { clients.get(key).write(dataIn); }
-      catch (NullPointerException e) {
-        clients.remove(key);
-        return 2; //noclient
-      }
-      return 0; //success
+      if (clients.get(key).write(dataIn)) return 0; //success
+      clients.remove(key); return 2; //noclient
   }
 
   return 255; //unknown error
