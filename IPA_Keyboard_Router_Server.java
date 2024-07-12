@@ -52,10 +52,10 @@ TimerTask removeUnused = new TimerTask() {
 
 public void setup() {
   // Starts a server on port 8000 to connect to the Clients
-  sJava = new sServer(8000, C -> javaClientEvent(C));
+  sJava = new sServer(8000, C -> clientEvent(C));
 
   // Starts a server on port 8001 to connect to the Python server
-  sPython = new sServer(8001, C -> pythonClientEvent(C));
+  sPython = new sServer(8001, C -> backendEvent(C));
   
   println("Server started on " + sServer.ip());
 
@@ -66,29 +66,46 @@ public void draw() {
   throw new Error();
 }
 
-public int javaClientEvent(sClient C) {
+public int clientEvent(sClient C) {
   int dataIn = C.read();
+  String linkingKey;
   String key;
 
   switch (dataIn) {
     // If appropriate and possible, add sClient C to keyClients
-    case 96: // java connect
+    case 96: // old client connect
+      linkingKey = C.readString();
+      println(linkingKey + " for linking to " + C.ip());
+      if (clients.containsKey(linkingKey)) //linkingKey exists
+        if (!clients.get(linkingKey).activationTimedout()) //and isn't timed out
+          return 251; //alert client
+      clients.put(linkingKey, C);
+      return 254; //success
+    
+    case 0: // new client connect / renew
+      linkingKey = C.readString(6);
       key = C.readString();
-      println(key + " for linking to " + C.ip());
-      clients.put(key, C);
+      println(linkingKey + " for linking to " + key);
+      if (clients.containsKey(linkingKey)) //linkingKey exists
+        if (!clients.get(linkingKey).activationTimedout()) //and isn't timed out
+          return 251; //alert client
+      C.key = key;
+      clients.put(linkingKey, C);
+      if (!clients.containsKey(key)) // don't overwrite an existing entry with that key
+        clients.put(key, C);
       return 254; //success
   }
 
   return 255; //unknown error
 }
 
-public int pythonClientEvent(sClient C) {
-  int dataIn = C.read();
+public int backendEvent(sClient B) {
+  int dataIn = B.read();
   String key;
 
   switch (dataIn) {
     case 0: // linking
-      String linkingKey = C.readString();
+      String linkingKey = B.readString();
       if (!clients.containsKey(linkingKey)) return 1; //nokey
       if (clients.get(linkingKey).activationTimedout()) {
         clients.remove(linkingKey);
@@ -98,16 +115,21 @@ public int pythonClientEvent(sClient C) {
         clients.remove(linkingKey);
         return 2; //noclient
       }
-      key = rand64Str(18);
-      clients.put(key, clients.remove(linkingKey));
-      println(key + " linked to " + clients.get(key).ip());
-      C.write(key);
+      key = clients.get(linkingKey).key;
+      if (key == null) { //must have been an old client
+        key = rand64Str(18);
+        clients.put(key, clients.remove(linkingKey));
+        println(key + " linked to " + clients.get(key).ip());
+      }
+      else //must have been a new client
+        clients.remove(linkingKey); //don't need to add it, since it was already added or extant
+      B.write(key);
       return 0; //success
 
-    // If appropriate and possible, send the 2nd byte from a python client to the right java client
+    // If appropriate and possible, send the 2nd byte from the backend to the right client
     case 1: // sending a key
-      dataIn = C.read();
-      key = C.readString();
+      dataIn = B.read();
+      key = B.readString();
       println(key + " sent " + dataIn);
       if (!clients.containsKey(key)) return 1; //nokey
       if (clients.get(key).write(dataIn)) return 0; //success

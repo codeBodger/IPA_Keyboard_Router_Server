@@ -48,7 +48,6 @@ import java.util.function.Function;
  * @webBrief The client class is used to create client Objects which connect to a server to exchange data
  * @instanceName client any variable of type Client
  * @usage Application
- * @see_external LIB_net/clientEvent
  */
 @SuppressWarnings("unused")
 public class sClient implements Runnable {
@@ -74,6 +73,8 @@ public class sClient implements Runnable {
 
   public boolean timeoutNextHour = false;
   long timeConnected;
+
+  public String key;
 
 
   /**
@@ -552,6 +553,18 @@ public class sClient implements Runnable {
     if (b == null) {
       return null;
     }
+    return new String(b, StandardCharsets.UTF_8);
+  }
+
+
+  /**
+   * Combination of <b>readBytes(int max)</b> and <b>readString()</b>.
+   * @param maxBytes the maximum number of bytes to read. <b>WARNING:</b> THIS MAY NOT BE THE NUMBER OF CHARACTERS.
+   * @return
+   */
+  public String readString(int maxBytes) {
+    byte[] b = readBytes(maxBytes);
+    if (b == null) return null;
     return new String(b, StandardCharsets.UTF_8);
   }
 
