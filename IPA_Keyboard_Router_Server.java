@@ -128,14 +128,20 @@ public int backendEvent(sClient B) {
 
   switch (dataIn) {
     case 0: // linking
+      String deadKey = "$$$$$$$$$$$$$$$$$$";
       String linkingKey = B.readString();
-      if (!clients.containsKey(linkingKey)) return 1; //nokey
+      if (!clients.containsKey(linkingKey)) {
+        B.write(deadKey);
+        return 1; //nokey
+      }
       if (clients.get(linkingKey).activationTimedout()) {
         clients.remove(linkingKey);
+        B.write(deadKey);
         return 3; //expired
       }
       if (!clients.get(linkingKey).write(252)) {
         clients.remove(linkingKey);
+        B.write(deadKey);
         return 2; //noclient
       }
       key = clients.get(linkingKey).key;
