@@ -111,6 +111,12 @@ public int clientEvent(sClient C) {
       C.key = key;
       clients.put(key, C);
       return 249; //success
+    
+    case 255: // stop
+      key = C.readString();
+      println(key + " closed");
+      clients.remove(key);
+      return 255;
   }
 
   return 255; //unknown error
