@@ -82,7 +82,8 @@ public int clientEvent(sClient C) {
       clients.put(linkingKey, C);
       return 254; //success
     
-    case 0: // new client connect / new key
+    case 0: // new client connect
+    case 2:// / new key
       linkingKey = C.readString(6);
       key = C.readString();
       println(linkingKey + " for linking to " + key);
@@ -91,9 +92,13 @@ public int clientEvent(sClient C) {
           return 251; //alert client
       C.key = key;
       clients.put(linkingKey, C);
-      if (!clients.containsKey(key)) // don't overwrite an existing entry with that key
-        clients.put(key, C);
-      return 254; //success
+      if (clients.containsKey(key)) {
+        if (dataIn == 0) return 247; //key exists on connect
+        if (dataIn == 2) return 248; //newkey successful
+        break;
+      }
+      clients.put(key, C);
+      return 254; //normal connection successful
 
     case 1: // new client renew
       key = C.readString();
