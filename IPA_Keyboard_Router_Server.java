@@ -66,6 +66,10 @@ public void draw() {
   throw new Error();
 }
 
+private boolean clientExists(String key) {
+  return clients.containsKey(key) && clients.get(key).active();
+}
+
 public int clientEvent(sClient C) {
   int dataIn = C.read();
   String linkingKey;
@@ -76,7 +80,7 @@ public int clientEvent(sClient C) {
     case 96: // old client connect
       linkingKey = C.readString();
       println(linkingKey + " for linking to " + C.ip());
-      if (clients.containsKey(linkingKey)) //linkingKey exists
+      if (clientExists(linkingKey)) //linkingKey exists
         if (!clients.get(linkingKey).activationTimedout()) //and isn't timed out
           return 251; //alert client
       clients.put(linkingKey, C);
@@ -87,12 +91,12 @@ public int clientEvent(sClient C) {
       linkingKey = C.readString(6);
       key = C.readString();
       println(linkingKey + " for linking to " + key);
-      if (clients.containsKey(linkingKey)) //linkingKey exists
+      if (clientExists(linkingKey)) //linkingKey exists
         if (!clients.get(linkingKey).activationTimedout()) //and isn't timed out
           return 251; //alert client
       C.key = key;
       clients.put(linkingKey, C);
-      if (clients.containsKey(key)) {
+      if (clientExists(key)) {
         if (dataIn == 0) return 247; //key exists on connect
         if (dataIn == 2) return 248; //newkey successful
         break;
@@ -103,8 +107,7 @@ public int clientEvent(sClient C) {
     case 1: // new client renew
       key = C.readString();
       println("Renew linking to " + key);
-      if (clients.containsKey(key))
-        return 250; //norenew
+      if (clientExists(key)) return 250; //norenew
       C.key = key;
       clients.put(key, C);
       return 249; //success
